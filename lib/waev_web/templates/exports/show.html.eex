@@ -3,33 +3,19 @@ ID: <%= @id %>
 <section class="phx-hero">
   <section class="row">
     <article class="column">
-      <h2>Left</h2>
-      <ul>
-        <li>
-          <a href="#">Link 1</a>
-        </li>
-        <li>
-          Text 2
-        </li>
-        <li>
-          Text 3
-        </li>
-      </ul>
+      <h2><%= @export.left %></h2>
     </article>
     <article class="column">
-      <h2>Right</h2>
-      <ul>
-        <li>
-          <a href="#">Link 1</a>
-        </li>
-        <li>
-          Text 2
-        </li>
-        <li>
-          Text 3
-        </li>
-      </ul>
+      <h2><%= @export.right %></h2>
     </article>
   </section>
+  <%= for message <- @export.messages do %>
+    <section class="row">
+      <article class="column">
+        <%= message.text %>
+      </article>
+      <article class="column">
+      </article>
+    </section>
+  <% end %>
 </section>
-
