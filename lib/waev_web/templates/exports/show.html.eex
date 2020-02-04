@@ -1,21 +1,21 @@
 ID: <%= @id %>
 
-<section class="phx-hero">
-  <section class="row">
-    <article class="column">
-      <h2><%= @export.left %></h2>
-    </article>
-    <article class="column">
-      <h2><%= @export.right %></h2>
-    </article>
-  </section>
+<div class="container">
+  <div class="row">
+    <div class="column column-50">
+      <%= @export.left %>
+    </div>
+    <div class="column column-50">
+      <%= @export.right %>
+    </div>
+  </div>
   <%= for message <- @export.messages do %>
-    <section class="row">
-      <article class="column">
+    <div class="row">
+      <div class="column column-75">
         <%= message.text %>
-      </article>
-      <article class="column">
-      </article>
-    </section>
+        <br />
+        <%= message.date %>
+      </div>
+    </div>
   <% end %>
-</section>
+</div>
