@@ -1,0 +1,35 @@
+ID: <%= @id %>
+
+<section class="phx-hero">
+  <section class="row">
+    <article class="column">
+      <h2>Left</h2>
+      <ul>
+        <li>
+          <a href="#">Link 1</a>
+        </li>
+        <li>
+          Text 2
+        </li>
+        <li>
+          Text 3
+        </li>
+      </ul>
+    </article>
+    <article class="column">
+      <h2>Right</h2>
+      <ul>
+        <li>
+          <a href="#">Link 1</a>
+        </li>
+        <li>
+          Text 2
+        </li>
+        <li>
+          Text 3
+        </li>
+      </ul>
+    </article>
+  </section>
+</section>
+

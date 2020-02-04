@@ -17,6 +17,8 @@ defmodule WaevWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    # index,edit,new,show,create,update
+    resources "/exports", ExportsController, only: [:show]
   end
 
   # Other scopes may use custom stacks.

@@ -1,5 +1,15 @@
 # Waev (WhatsApp Exports Viewer)
 
+## Internal export format
+
+Each format is a folder inside `exports_path` with the following structure:
+
+    export1/
+      chat.txt
+      media/ (optional)
+
+## Auto generated stuff left here for reference
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
@@ -10,7 +20,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-## Learn more
+### Learn more
 
   * Official website: https://www.phoenixframework.org/
   * Guides: https://hexdocs.pm/phoenix/overview.html
