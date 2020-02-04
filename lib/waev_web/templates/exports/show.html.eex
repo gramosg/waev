@@ -1,20 +1,33 @@
 ID: <%= @id %>
 
-<div class="container">
+<div class="container wa-back">
   <div class="row">
     <div class="column column-50">
-      <%= @export.left %>
+      <%= @export.left.name %>
     </div>
     <div class="column column-50">
-      <%= @export.right %>
+      <%= @export.right.name %>
     </div>
   </div>
   <%= for message <- @export.messages do %>
     <div class="row">
-      <div class="column column-75">
+      <%= case message.side do %>
+        <% :left -> %>
+          <div class="column wa-message column-75 ">
+        <% :right -> %>
+          <div class="column wa-message column-75 column-offset-25">
+        <% nil -> %>
+          <div class="column wa-message column-50 column-offset-25">
+      <% end %>
+        <%= case message.attachment do %>
+          <% %Waev.Export.Message.File{filename: filename} -> %>
+            <a href="#"><%= filename %></a>
+          <% nil -> %>
+        <% end %>
         <%= message.text %>
-        <br />
-        <%= message.date %>
+        <div class="wa-message-date">
+          <%= message.date %>
+        </div>
       </div>
     </div>
   <% end %>

@@ -1,6 +1,12 @@
 defmodule Waev.Export do
+  require Logger
+
   defmodule Party do
     defstruct name: nil, photo: nil
+
+    def lookup(name) do
+      %Party{name: name, photo: nil}
+    end
   end
 
   defmodule Message do
@@ -12,7 +18,20 @@ defmodule Waev.Export do
       defstruct filename: nil
     end
 
-    defstruct party: nil, date: nil, text: nil, attachment: nil
+    defstruct side: nil, date: nil, text: nil, attachment: nil
+
+    def parse(side, datetime, text) do
+      {text, attachment} =
+        case Regex.run(~r/^([^ ]+) \(archivo adjunto\)$/u, text) do
+          [^text, filename] ->
+            {nil, %File{filename: filename}}
+
+          nil ->
+            {text, nil}
+        end
+
+      %Message{side: side, date: datetime, text: text, attachment: attachment}
+    end
   end
 
   defstruct left: nil, right: nil, messages: []
@@ -36,22 +55,38 @@ defmodule Waev.Export do
       true ->
         export =
           File.stream!("#{path()}/#{e}/chat.txt")
+          |> Enum.take(200)
           |> Enum.reduce(%Waev.Export{}, fn line, export ->
             line = String.trim(line)
 
             case Regex.run(~r/^(\d+\/\d+\/\d+ \d+:\d+) - ([^:]+): (.*)$/u, line) do
               # Match: new message
               [^line, datetime, name, text] ->
-                party = nil
+                {export, side} =
+                  case {export.left, export.right, name} do
+                    {nil, _, _} ->
+                      {%{export | left: Party.lookup(name)}, :left}
 
-                message =
-                  case Regex.run(~r/^([^ ]+) \(archivo adjunto\)$/u, text) do
-                    [^text, filename] ->
-                      %Message{party: party, date: datetime, text: nil, attachment: filename}
+                    {%{name: left}, _, left} ->
+                      {export, :left}
 
-                    nil ->
-                      %Message{party: party, date: datetime, text: text, attachment: nil}
+                    {_, nil, _} ->
+                      {%{export | right: Party.lookup(name)}, :right}
+
+                    {_, %{name: right}, right} ->
+                      {export, :right}
+
+                    {left, right, name} ->
+                      Logger.error(
+                        "Found a third party!? (left, right, name) = #{
+                          inspect({left.name, right.name, name})
+                        }"
+                      )
+
+                      {export, nil}
                   end
+
+                message = Message.parse(side, datetime, text)
 
                 %{export | messages: [message | export.messages]}
 
@@ -74,7 +109,7 @@ defmodule Waev.Export do
                     export
                 end
             end
-        end)
+          end)
 
         {:ok, export}
 

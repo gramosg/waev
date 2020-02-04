@@ -1,3 +1,16 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+
+.wa-back {
+  background-color: #dddddd;
+}
+
+.wa-message {
+  margin: 15px 0 15px 0;
+  background-color: white;
+}
+
+.wa-message-date {
+  text-align: right;
+}
