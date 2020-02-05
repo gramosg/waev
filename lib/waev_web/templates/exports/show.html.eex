@@ -20,8 +20,12 @@ ID: <%= @id %>
           <div class="column wa-message column-50 column-offset-25">
       <% end %>
         <%= case message.attachment do %>
-          <% %Waev.Export.Message.File{filename: filename} -> %>
-            <a href="#"><%= filename %></a>
+          <% %Waev.Export.Message.File{filename: filename} = file -> %>
+            <%= if file.available do %>
+              <a href="<%= Routes.exports_path(@conn, :get_attachment, @id, filename) %>"><%= filename %></a>
+            <% else %>
+              <i><%= filename %></i> (fichero adjunto no disponible)
+            <% end %>
           <% nil -> %>
         <% end %>
         <%= message.text %>

@@ -15,16 +15,26 @@ defmodule Waev.Export do
     end
 
     defmodule File do
-      defstruct filename: nil
+      defstruct filename: nil, available: nil
+
+      def path(e_id, filename) do
+        path = "#{Waev.Export.export_path(e_id)}/media/#{filename}"
+
+        if Elixir.File.regular?(path) do
+          {:ok, path}
+        else
+          :error
+        end
+      end
     end
 
     defstruct side: nil, date: nil, text: nil, attachment: nil
 
-    def parse(side, datetime, text) do
+    def parse(e, side, datetime, text) do
       {text, attachment} =
-        case Regex.run(~r/^([^ ]+) \(archivo adjunto\)$/u, text) do
-          [^text, filename] ->
-            {nil, %File{filename: filename}}
+        case Regex.run(~r/([[:ascii:]]+) \(archivo adjunto\)$/u, text) do
+          [_, filename] ->
+            {nil, %File{filename: filename, available: File.path(e.id, filename) != :error}}
 
           nil ->
             {text, nil}
@@ -34,7 +44,7 @@ defmodule Waev.Export do
     end
   end
 
-  defstruct left: nil, right: nil, messages: []
+  defstruct id: nil, left: nil, right: nil, messages: []
 
   def path do
     Application.fetch_env!(:waev, __MODULE__)[:exports_path]
@@ -50,31 +60,31 @@ defmodule Waev.Export do
     end
   end
 
-  def get(e) do
-    case exists?(e) do
+  def get(e_id) do
+    case exists?(e_id) do
       true ->
-        export =
-          File.stream!("#{path()}/#{e}/chat.txt")
+        e =
+          File.stream!("#{export_path(e_id)}/chat.txt")
           |> Enum.take(200)
-          |> Enum.reduce(%Waev.Export{}, fn line, export ->
+          |> Enum.reduce(%Waev.Export{id: e_id}, fn line, e ->
             line = String.trim(line)
 
             case Regex.run(~r/^(\d+\/\d+\/\d+ \d+:\d+) - ([^:]+): (.*)$/u, line) do
               # Match: new message
               [^line, datetime, name, text] ->
-                {export, side} =
-                  case {export.left, export.right, name} do
+                {e, side} =
+                  case {e.left, e.right, name} do
                     {nil, _, _} ->
-                      {%{export | left: Party.lookup(name)}, :left}
+                      {%{e | left: Party.lookup(name)}, :left}
 
                     {%{name: left}, _, left} ->
-                      {export, :left}
+                      {e, :left}
 
                     {_, nil, _} ->
-                      {%{export | right: Party.lookup(name)}, :right}
+                      {%{e | right: Party.lookup(name)}, :right}
 
                     {_, %{name: right}, right} ->
-                      {export, :right}
+                      {e, :right}
 
                     {left, right, name} ->
                       Logger.error(
@@ -83,17 +93,17 @@ defmodule Waev.Export do
                         }"
                       )
 
-                      {export, nil}
+                      {e, nil}
                   end
 
-                message = Message.parse(side, datetime, text)
+                message = Message.parse(e, side, datetime, text)
 
-                %{export | messages: [message | export.messages]}
+                %{e | messages: [message | e.messages]}
 
               # Otherwise: text continuing from the previous one. We need to
               # append it to the last message.
               nil ->
-                case export.messages do
+                case e.messages do
                   [first | rest] ->
                     text =
                       case first.text do
@@ -102,24 +112,26 @@ defmodule Waev.Export do
                       end
 
                     first = %{first | text: text}
-                    %{export | messages: [first | rest]}
+                    %{e | messages: [first | rest]}
 
                   # ... unless we are before the first message. Drop it.
                   _ ->
-                    export
+                    e
                 end
             end
           end)
 
-        {:ok, export}
+        {:ok, e}
 
       false ->
         :error
     end
   end
 
-  defp exists?(e) do
-    e_path = "#{path()}/#{e}"
+  def export_path(e_id), do: "#{path()}/#{e_id}"
+
+  defp exists?(e_id) do
+    e_path = export_path(e_id)
 
     File.dir?(e_path) && File.regular?("#{e_path}/chat.txt")
   end
