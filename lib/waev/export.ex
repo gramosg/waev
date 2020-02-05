@@ -11,7 +11,14 @@ defmodule Waev.Export do
 
   defmodule Message do
     defmodule Photo do
-      defstruct filename: nil, mime: nil, blob: nil
+      defstruct filename: nil, blob: nil
+
+      def valid_extension?(filename) do
+        valid_extensions = ["png", "jpeg", "jpg"]
+        extension =
+          filename |> String.split(".") |> Enum.at(-1) |> String.downcase()
+        Enum.member?(valid_extensions, extension)
+      end
     end
 
     defmodule File do
@@ -34,7 +41,19 @@ defmodule Waev.Export do
       {text, attachment} =
         case Regex.run(~r/([[:ascii:]]+) \(archivo adjunto\)$/u, text) do
           [_, filename] ->
-            {nil, %File{filename: filename, available: File.path(e.id, filename) != :error}}
+            available = File.path(e.id, filename) != :error
+            # IO.puts("filename: #{filename}, av: #{available}, ve: #{}")
+            if available and Message.Photo.valid_extension?(filename) do
+              case Elixir.File.read(filename) do
+                {:ok, binary} ->
+                  {nil, %Photo{filename: filename, blob: binary}}
+                {:error, reason} ->
+                  Logger.error("Error opening photo #{filename}: #{reason}")
+                  {nil, %File{filename: filename, available: false}}
+              end
+            else
+              {nil, %File{filename: filename, available: available}}
+            end
 
           nil ->
             {text, nil}
