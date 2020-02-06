@@ -2,47 +2,51 @@
 
 @import "./milligram.css";
 
-.container{
+body {
+  background-color: #dddddd;
+}
+
+.container {
   margin: 0 auto;
-  max-width: 80.0rem;
+  max-width: 90.0rem;
   padding: 0 2.0rem;
   position: relative;
   width: 100%;
 }
 
 .wa-avatar {
-  position: fixed;
-  top: 0;
-  background-color: #dddddd;
-}
-.wa-left {
-  left: 0;
-}
-.wa-right {
-  right: 0;
+  text-align: center;
 }
 
-/* Chat background */
-.wa-back {
-  background-color: #dddddd;
+.wa-row {
+  display: flex;
+  flex-direction: column;
+}
+.wa-row-left {
+  align-items: flex-start;
+}
+.wa-row-right {
+  align-items: flex-end;
 }
 
 /* Message box */
 .wa-message {
-  padding: 5px !important;
+  padding: 0px !important;
   margin-top: 10px;
   background-color: white;
   border-radius: 5px;
   box-shadow: 1px 1px 2px grey;
+  max-width: 65%;
 }
 
 .wa-message-photo {
-  border-radius: 5px;
+  border-radius: 5px 5px 0 0;
+  max-height: 600px;
 }
 
-.wa-message-text {
+.wa-message-box {
+  padding: 0 10px 0 10px;
   margin-top: 5px;
-  border-radius: 5px;
 }
 
 .wa-message-date {
