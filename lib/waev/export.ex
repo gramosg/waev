@@ -10,22 +10,17 @@ defmodule Waev.Export do
   end
 
   defmodule Message do
-    defmodule Photo do
-      defstruct filename: nil, mime: nil, blob: nil
+    defmodule File do
+      defstruct filename: nil, available: nil, type: nil
 
-      def valid_extension?(filename) do
+      def exists?(e_id, filename) do
+        Elixir.File.regular?(Waev.Export.media_path(e_id, filename))
+      end
+      def photo_extension?(filename) do
         valid_extensions = ["png", "jpeg", "jpg"]
         extension =
           filename |> String.split(".") |> Enum.at(-1) |> String.downcase()
         Enum.member?(valid_extensions, extension)
-      end
-    end
-
-    defmodule File do
-      defstruct filename: nil, available: nil
-
-      def exists?(e_id, filename) do
-        Elixir.File.regular?(Waev.Export.media_path(e_id, filename))
       end
       def path(e_id, filename) do
         path = Waev.Export.media_path(e_id, filename)
@@ -45,18 +40,10 @@ defmodule Waev.Export do
         case Regex.run(~r/([[:ascii:]]+) \(archivo adjunto\)$/u, text) do
           [_, filename] ->
             available = File.path(e.id, filename) != :error
-            # IO.puts("filename: #{filename}, av: #{available}, ve: #{}")
-            if available and Message.Photo.valid_extension?(filename) do
-              case Elixir.File.read(Waev.Export.media_path(e.id, filename)) do
-                {:ok, binary} ->
-                  # TODO review mime
-                  {nil, %Photo{filename: filename, mime: "image", blob: Base.encode64(binary)}}
-                {:error, reason} ->
-                  Logger.error("Error opening photo #{filename}: #{reason}")
-                  {nil, %File{filename: filename, available: false}}
-              end
+            if Message.File.photo_extension?(filename) do
+              {nil, %File{filename: filename, available: available, type: :photo}}
             else
-              {nil, %File{filename: filename, available: available}}
+              {nil, %File{filename: filename, available: available, type: :file}}
             end
 
           nil ->
@@ -85,7 +72,7 @@ defmodule Waev.Export do
       true ->
         e =
           File.stream!(chat_path(e_id))
-          |> Enum.take(200)
+          |> Enum.take(600)
           |> Enum.reduce(%Waev.Export{id: e_id}, fn line, e ->
             line = String.trim(line)
 

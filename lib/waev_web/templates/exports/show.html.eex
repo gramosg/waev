@@ -1,41 +1,41 @@
-ID: <%= @id %>
+<div class="wa-avatar wa-left">
+  <%= @export.left.name %>
+</div>
+
+<div class="wa-avatar wa-right">
+  <%= @export.right.name %>
+</div>
 
 <div class="container wa-back">
-  <div class="row">
-    <div class="column column-50">
-      <%= @export.left.name %>
-    </div>
-    <div class="column column-50">
-      <%= @export.right.name %>
-    </div>
-  </div>
+
   <%= for message <- @export.messages do %>
-    <div class="row">
-      <%= case message.side do %>
-        <% :left -> %>
-          <div class="column wa-message column-75">
-        <% :right -> %>
-          <div class="column wa-message column-75 column-offset-25">
-        <% nil -> %>
-          <div class="column wa-message column-50 column-offset-25">
-      <% end %>
-        <%= case message.attachment do %>
-          <% %Waev.Export.Message.File{filename: filename} = file -> %>
-            <%= if file.available do %>
-              <a href="<%= Routes.exports_path(@conn, :get_attachment, @id, filename) %>"><%= filename %></a>
-            <% else %>
-              <i><%= filename %></i> (fichero adjunto no disponible)
-            <% end %>
-          <% %Waev.Export.Message.Photo{filename: filename, mime: mime, blob: blob} -> %>
-            <div><img class="wa-message-photo" alt="<%= filename %>" src="data:<%= mime %>;base64,<%= blob %>" /></div>
-            <div><a href="<%= Routes.exports_path(@conn, :get_attachment, @id, filename) %>"><%= filename %></a></div>
-          <% nil -> %>
-        <% end %>
-        <%= message.text %>
-        <div class="wa-message-date">
-          <%= message.date %>
-        </div>
-      </div>
+  <div class="row">
+    <%= case message.side do %>
+    <% :left -> %>
+      <div class="column wa-message column-75">
+    <% :right -> %>
+      <div class="column wa-message column-75 column-offset-25">
+    <% nil -> %>
+      <div class="column wa-message column-50 column-offset-25">
+    <% end %>
+
+    <%= case message.attachment do %>
+    <% %Waev.Export.Message.File{filename: filename, available: false} -> %>
+      <i><%= filename %></i> (fichero adjunto no disponible)
+    <% %Waev.Export.Message.File{filename: filename, available: true, type: :file} -> %>
+      <a href="<%= Routes.exports_path(@conn, :get_attachment, @id, filename) %>"><%= filename %></a>
+    <% %Waev.Export.Message.File{filename: filename, available: true, type: :photo} -> %>
+      <div><img class="wa-message-photo" alt="<%= filename %>" src="<%= Routes.exports_path(@conn, :get_attachment, @id, filename) %>" /></div>
+      <div><a href="<%= Routes.exports_path(@conn, :get_attachment, @id, filename) %>"><%= filename %></a></div>
+    <% nil -> %>
+    <% end %>
+
+    <%= message.text %>
+    <div class="wa-message-date">
+      <%= message.date %>
     </div>
+      </div>
+  </div>
   <% end %>
+
 </div>

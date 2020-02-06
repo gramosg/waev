@@ -10,6 +10,18 @@
   width: 100%;
 }
 
+.wa-avatar {
+  position: fixed;
+  top: 0;
+  background-color: #dddddd;
+}
+.wa-left {
+  left: 0;
+}
+.wa-right {
+  right: 0;
+}
+
 /* Chat background */
 .wa-back {
   background-color: #dddddd;
