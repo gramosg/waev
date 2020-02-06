@@ -1,16 +1,40 @@
 /* This file is for your main application css. */
 
-@import "./phoenix.css";
+@import "./milligram.css";
 
+.container{
+  margin: 0 auto;
+  max-width: 80.0rem;
+  padding: 0 2.0rem;
+  position: relative;
+  width: 100%;
+}
+
+/* Chat background */
 .wa-back {
   background-color: #dddddd;
 }
 
+/* Message box */
 .wa-message {
-  margin: 15px 0 15px 0;
+  padding: 5px !important;
+  margin-top: 10px;
   background-color: white;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px grey;
+}
+
+.wa-message-photo {
+  border-radius: 5px;
+}
+
+.wa-message-text {
+  margin-top: 5px;
+  border-radius: 5px;
 }
 
 .wa-message-date {
   text-align: right;
+  color: grey;
+  font-size: 12px;
 }
