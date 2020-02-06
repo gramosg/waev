@@ -21,7 +21,7 @@
     <div class="wa-message">
       <%= case message.attachment do %>
         <% %Waev.Export.Message.File{filename: filename, available: true, type: :photo} -> %>
-      <img class="wa-message-photo" alt="<%= filename %>" src="<%= Routes.exports_path(@conn, :get_attachment, @id, filename) %>" />
+      <img class="wa-message-photo" alt="<%= filename %>" src="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>" />
         <% _ -> %>
       <% end %>
       <div class="wa-message-box">
@@ -29,7 +29,7 @@
           <% %Waev.Export.Message.File{filename: filename, available: false} -> %>
         <i class="wa-message-text"><%= filename %></i> (fichero adjunto no disponible)
           <% %Waev.Export.Message.File{filename: filename, available: true, type: :file} -> %>
-        <a class="wa-message-text" href="<%= Routes.exports_path(@conn, :get_attachment, @id, filename) %>"><%= filename %></a>
+        <a class="wa-message-text" href="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>"><%= filename %></a>
           <% _ -> %>
         <% end %>
 

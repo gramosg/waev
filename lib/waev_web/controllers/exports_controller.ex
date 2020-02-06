@@ -14,7 +14,7 @@ defmodule WaevWeb.ExportsController do
     end
   end
 
-  def get_attachment(conn, %{"id" => id, "at_id" => at_id}) do
+  def get_media(conn, %{"id" => id, "at_id" => at_id}) do
     case Waev.Export.Message.File.path(id, at_id) do
       {:ok, path} ->
         send_download(conn, {:file, path}, filename: at_id)
