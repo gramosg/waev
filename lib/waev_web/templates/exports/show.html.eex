@@ -26,6 +26,9 @@ ID: <%= @id %>
             <% else %>
               <i><%= filename %></i> (fichero adjunto no disponible)
             <% end %>
+          <% %Waev.Export.Message.Photo{filename: filename, mime: mime, blob: blob} -> %>
+            <div><img alt="<%= filename %>" src="data:<%= mime %>;base64,<%= blob %>" /></div>
+            <div><a href="<%= Routes.exports_path(@conn, :get_attachment, @id, filename) %>"><%= filename %></a></div>
           <% nil -> %>
         <% end %>
         <%= message.text %>

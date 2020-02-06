@@ -11,7 +11,7 @@ defmodule Waev.Export do
 
   defmodule Message do
     defmodule Photo do
-      defstruct filename: nil, blob: nil
+      defstruct filename: nil, mime: nil, blob: nil
 
       def valid_extension?(filename) do
         valid_extensions = ["png", "jpeg", "jpg"]
@@ -24,8 +24,11 @@ defmodule Waev.Export do
     defmodule File do
       defstruct filename: nil, available: nil
 
+      def exists?(e_id, filename) do
+        Elixir.File.regular?(Waev.Export.media_path(e_id, filename))
+      end
       def path(e_id, filename) do
-        path = "#{Waev.Export.export_path(e_id)}/media/#{filename}"
+        path = Waev.Export.media_path(e_id, filename)
 
         if Elixir.File.regular?(path) do
           {:ok, path}
@@ -44,9 +47,10 @@ defmodule Waev.Export do
             available = File.path(e.id, filename) != :error
             # IO.puts("filename: #{filename}, av: #{available}, ve: #{}")
             if available and Message.Photo.valid_extension?(filename) do
-              case Elixir.File.read(filename) do
+              case Elixir.File.read(Waev.Export.media_path(e.id, filename)) do
                 {:ok, binary} ->
-                  {nil, %Photo{filename: filename, blob: binary}}
+                  # TODO review mime
+                  {nil, %Photo{filename: filename, mime: "image", blob: Base.encode64(binary)}}
                 {:error, reason} ->
                   Logger.error("Error opening photo #{filename}: #{reason}")
                   {nil, %File{filename: filename, available: false}}
@@ -65,9 +69,6 @@ defmodule Waev.Export do
 
   defstruct id: nil, left: nil, right: nil, messages: []
 
-  def path do
-    Application.fetch_env!(:waev, __MODULE__)[:exports_path]
-  end
 
   def list do
     case File.ls(path()) do
@@ -83,7 +84,7 @@ defmodule Waev.Export do
     case exists?(e_id) do
       true ->
         e =
-          File.stream!("#{export_path(e_id)}/chat.txt")
+          File.stream!(chat_path(e_id))
           |> Enum.take(200)
           |> Enum.reduce(%Waev.Export{id: e_id}, fn line, e ->
             line = String.trim(line)
@@ -147,11 +148,12 @@ defmodule Waev.Export do
     end
   end
 
+  def path, do: Application.fetch_env!(:waev, __MODULE__)[:exports_path]
   def export_path(e_id), do: "#{path()}/#{e_id}"
+  def chat_path(e_id), do: "#{export_path(e_id)}/chat.txt"
+  def media_path(e_id, media_id), do: "#{export_path(e_id)}/media/#{media_id}"
 
   defp exists?(e_id) do
-    e_path = export_path(e_id)
-
-    File.dir?(e_path) && File.regular?("#{e_path}/chat.txt")
+    File.dir?(export_path(e_id)) && File.regular?(chat_path(e_id))
   end
 end
