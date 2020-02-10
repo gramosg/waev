@@ -2,60 +2,58 @@ defmodule Waev.Export do
   require Logger
 
   defmodule Party do
-    defstruct name: nil, photo: nil
+    defstruct name: nil
 
-    def lookup(name) do
-      %Party{name: name, photo: nil}
+    def avatar_path(e_id, filename) do
+      path = "#{Waev.Export.export_path(e_id)}/avatars/#{filename}"
+      if File.regular?(path), do: path, else: nil
+    end
+
+    def new(name) do
+      %Party{name: name}
     end
   end
 
   defmodule Message do
     defmodule File do
-      defstruct filename: nil, available: nil, type: nil
+      # type is either :image or :file
+      defstruct filename: nil, type: nil
 
-      def exists?(e_id, filename) do
-        Elixir.File.regular?(Waev.Export.media_path(e_id, filename))
+      def media_path(e_id, filename) do
+        path = "#{Waev.Export.export_path(e_id)}/media/#{filename}"
+        if Elixir.File.regular?(path), do: path, else: nil
       end
-      def photo_extension?(filename) do
+
+      def is_image?(filename) do
         valid_extensions = ["png", "jpeg", "jpg"]
-        extension =
-          filename |> String.split(".") |> Enum.at(-1) |> String.downcase()
+        extension = filename |> String.split(".") |> Enum.at(-1) |> String.downcase()
         Enum.member?(valid_extensions, extension)
       end
-      def path(e_id, filename) do
-        path = Waev.Export.media_path(e_id, filename)
 
-        if Elixir.File.regular?(path) do
-          {:ok, path}
-        else
-          :error
-        end
+      def new(filename) do
+        type = if is_image?(filename), do: :image, else: :file
+        %File{filename: filename, type: type}
       end
     end
 
     defstruct side: nil, date: nil, text: nil, attachment: nil
 
-    def parse(e, side, datetime, text) do
+    def parse(side, datetime, text) do
       {text, attachment} =
         case Regex.run(~r/([[:ascii:]]+) \(archivo adjunto\)$/u, text) do
           [_, filename] ->
-            available = File.path(e.id, filename) != :error
-            if Message.File.photo_extension?(filename) do
-              {nil, %File{filename: filename, available: available, type: :photo}}
-            else
-              {nil, %File{filename: filename, available: available, type: :file}}
-            end
+            {nil, File.new(filename)}
 
           nil ->
             {text, nil}
         end
 
+      IO.puts("Attachment: #{inspect(attachment)}")
       %Message{side: side, date: datetime, text: text, attachment: attachment}
     end
   end
 
   defstruct id: nil, left: nil, right: nil, messages: []
-
 
   def list do
     case File.ls(path()) do
@@ -82,13 +80,13 @@ defmodule Waev.Export do
                 {e, side} =
                   case {e.left, e.right, name} do
                     {nil, _, _} ->
-                      {%{e | left: Party.lookup(name)}, :left}
+                      {%{e | left: Party.new(name)}, :left}
 
                     {%{name: left}, _, left} ->
                       {e, :left}
 
                     {_, nil, _} ->
-                      {%{e | right: Party.lookup(name)}, :right}
+                      {%{e | right: Party.new(name)}, :right}
 
                     {_, %{name: right}, right} ->
                       {e, :right}
@@ -103,7 +101,7 @@ defmodule Waev.Export do
                       {e, nil}
                   end
 
-                message = Message.parse(e, side, datetime, text)
+                message = Message.parse(side, datetime, text)
 
                 %{e | messages: [message | e.messages]}
 
@@ -138,7 +136,6 @@ defmodule Waev.Export do
   def path, do: Application.fetch_env!(:waev, __MODULE__)[:exports_path]
   def export_path(e_id), do: "#{path()}/#{e_id}"
   def chat_path(e_id), do: "#{export_path(e_id)}/chat.txt"
-  def media_path(e_id, media_id), do: "#{export_path(e_id)}/media/#{media_id}"
 
   defp exists?(e_id) do
     File.dir?(export_path(e_id)) && File.regular?(chat_path(e_id))

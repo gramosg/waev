@@ -15,15 +15,28 @@ defmodule WaevWeb.ExportsController do
   end
 
   def get_media(conn, %{"id" => id, "at_id" => at_id}) do
-    case Waev.Export.Message.File.path(id, at_id) do
-      {:ok, path} ->
-        send_download(conn, {:file, path}, filename: at_id)
-
-      :error ->
+    case Waev.Export.Message.File.media_path(id, at_id) do
+      nil ->
         conn
         |> put_status(:not_found)
         |> put_view(WaevWeb.ErrorView)
         |> render("404.html")
+
+      path ->
+        send_download(conn, {:file, path}, filename: at_id)
+    end
+  end
+
+  def get_avatar(conn, %{"id" => id, "av_id" => av_id}) do
+    case Waev.Export.Party.avatar_path(id, av_id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(WaevWeb.ErrorView)
+        |> render("404.html")
+
+      path ->
+        send_download(conn, {:file, path}, filename: av_id)
     end
   end
 end

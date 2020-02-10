@@ -20,6 +20,7 @@ defmodule WaevWeb.Router do
     # index,edit,new,show,create,update
     resources "/exports", ExportsController, only: [:show]
     get "/exports/:id/media/:at_id", ExportsController, :get_media
+    get "/exports/:id/avatars/:av_id", ExportsController, :get_avatar
   end
 
   # Other scopes may use custom stacks.
