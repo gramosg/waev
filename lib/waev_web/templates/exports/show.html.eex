@@ -26,7 +26,7 @@
         <% _ -> %>
       <% end %>
 
-      <div><%= message.text %></div>
+      <div><%= highlight_urls(message.text) %></div>
       <div class="message-date">
         <%= message.date %>
       </div>

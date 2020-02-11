@@ -22,4 +22,16 @@ defmodule WaevWeb.ExportsView do
 <img class="avatar <%= modifier %>" src="<%= Routes.exports_path(@conn, :get_avatar, @id, party.name) %>" />
 """
   end
+
+  def highlight_urls(nil), do: ""
+  def highlight_urls(text) do
+    url_re = ~r/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/
+
+    url_re
+    |> Regex.scan(text)
+    |> Enum.reduce(text, fn [url|_], t ->
+      String.replace(t, url, "<a target=\"_blank\" href=#{url}>#{url}</a>", global: false)
+    |> raw()
+    end)
+  end
 end
