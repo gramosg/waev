@@ -14,67 +14,67 @@ body {
   width: 100%;
 }
 
-.wa-avatars {
+.parties {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-.wa-avatars .wa-avatar {
+.party-peek {
   flex: 0 0 50%;
   text-align: center;
   padding: 16px 40px 12px 40px;
 }
-.wa-avatars .wa-avatar figure {
+.party-peek figure {
   margin: 0;
 }
 
-.wa-avatar img {
+.avatar {
+  border-radius: 50%;
+}
+.avatar--big {
   max-height: 140px;
-  border-radius: 50%;
 }
-
-.wa-avatar--tiny {
+.avatar--tiny {
   max-height: 42px;
-  border-radius: 50%;
 }
 
-.wa-row {
+.row {
   margin-top: 10px;
   display: flex;
   align-items: center;
 }
-.wa-row-left {
+.row-left {
   flex-direction: row;
 }
-.wa-row-right {
+.row-right {
   flex-direction: row-reverse;
 }
 
-.wa-white-box {
+.white-box {
   background-color: white;
   border-radius: 5px;
   box-shadow: 1px 1px 2px grey;
 }
 
 /* Message box */
-.wa-message {
+.message {
   padding: 0px !important;
   margin: 0 10px 0 10px;
   max-width: 65%;
 }
 
-.wa-message-photo {
+.message-photo {
   border-radius: 5px 5px 0 0;
   max-height: 600px;
 }
 
-.wa-message-box {
+.message-box {
   padding: 0 10px 0 10px;
   margin-top: 5px;
   overflow-wrap: break-word;
 }
 
-.wa-message-date {
+.message-date {
   text-align: right;
   color: grey;
   font-size: 12px;

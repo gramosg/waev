@@ -1,43 +1,33 @@
-<div class="wa-avatars">
-  <div class="wa-avatar">
-    <figure>
-      <img alt="<%= @export.left.name %>" src="<%= Routes.exports_path(@conn, :get_avatar, @id, @export.left.name) %>" />
-      <figcaption><%= @export.left.name %></figcaption>
-    </figure>
-  </div>
-  <div class="wa-avatar">
-    <figure>
-      <img alt="<%= @export.right.name %>" src="<%= Routes.exports_path(@conn, :get_avatar, @id, @export.right.name) %>" />
-      <figcaption><%= @export.right.name %></figcaption>
-    </figure>
-  </div>
+<div class="parties">
+  <%= party_peek(assigns, @export.left) %>
+  <%= party_peek(assigns, @export.right) %>
 </div>
 
 <%= for message <- @export.messages do %>
   <%= case message.side do %>
     <% :left -> %>
-<div class="wa-row wa-row-left">
-  <img class="wa-avatar--tiny" src="<%= Routes.exports_path(@conn, :get_avatar, @id, @export.left.name) %>" />
+<div class="row row-left">
+  <%= party_avatar(assigns, @export.left, :tiny) %>
     <% :right -> %>
-<div class="wa-row wa-row-right">
-  <img class="wa-avatar--tiny" src="<%= Routes.exports_path(@conn, :get_avatar, @id, @export.right.name) %>" />
+<div class="row row-right">
+  <%= party_avatar(assigns, @export.right, :tiny) %>
   <% end %>
 
-  <div class="wa-message wa-white-box">
+  <div class="message white-box">
     <%= case message.attachment do %>
       <% %Waev.Export.Message.File{filename: filename, type: :image} -> %>
-    <img class="wa-message-photo" alt="<%= filename %>" src="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>" />
+    <img class="message-photo" alt="<%= filename %>" src="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>" />
       <% _ -> %>
     <% end %>
-    <div class="wa-message-box">
+    <div class="message-box">
       <%= case message.attachment do %>
         <% %Waev.Export.Message.File{filename: filename, type: :file} -> %>
-      <a class="wa-message-text" href="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>"><%= filename %></a>
+      <a class="message-text" href="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>"><%= filename %></a>
         <% _ -> %>
       <% end %>
 
       <div><%= message.text %></div>
-      <div class="wa-message-date">
+      <div class="message-date">
         <%= message.date %>
       </div>
     </div>
