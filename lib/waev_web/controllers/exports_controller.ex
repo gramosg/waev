@@ -1,10 +1,13 @@
 defmodule WaevWeb.ExportsController do
   use WaevWeb, :controller
 
-  def show(conn, %{"id" => id}) do
-    case Waev.Export.get(id) do
+  def show(conn, %{"id" => id} = params) do
+    page = Map.get(params, "page", "1") |> String.to_integer()
+    size = Map.get(params, "size", "100") |> String.to_integer()
+
+    case Waev.Export.get(id, page, size) do
       {:ok, export} ->
-        render(conn, "show.html", id: id, export: export)
+        render(conn, "show.html", id: id, export: export, page: page, size: size)
 
       :error ->
         conn

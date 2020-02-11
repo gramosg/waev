@@ -48,7 +48,6 @@ defmodule Waev.Export do
             {text, nil}
         end
 
-      IO.puts("Attachment: #{inspect(attachment)}")
       %Message{side: side, date: datetime, text: text, attachment: attachment}
     end
   end
@@ -65,12 +64,14 @@ defmodule Waev.Export do
     end
   end
 
-  def get(e_id) do
+  def get(e_id, page, size) do
     case exists?(e_id) do
       true ->
         e =
           File.stream!(chat_path(e_id))
-          |> Enum.take(600)
+          |> Enum.drop((page - 1) * size)
+          |> Enum.take(size)
+          |> Enum.reverse()
           |> Enum.reduce(%Waev.Export{id: e_id}, fn line, e ->
             line = String.trim(line)
 

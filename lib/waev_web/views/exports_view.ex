@@ -38,4 +38,17 @@ defmodule WaevWeb.ExportsView do
       |> raw()
     end)
   end
+
+  def pagination_bar(assigns, page, size) do
+    prev = if page == 0, do: 0, else: page - 1
+    # TODO max
+    next = page + 1
+
+    ~E"""
+    <div>
+    <a href="<%= Routes.exports_path(@conn, :show, @id, page: prev, size: size) %>">Left</a>
+    <a href="<%= Routes.exports_path(@conn, :show, @id, page: next, size: size) %>">Right</a>
+    </div>
+    """
+  end
 end
