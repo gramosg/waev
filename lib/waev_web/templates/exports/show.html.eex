@@ -1,46 +1,47 @@
-<div class="container">
-  <div class="row">
-    <div class="column column-50 wa-avatar">
+<div class="wa-avatars">
+  <div class="wa-avatar">
+    <figure>
       <img alt="<%= @export.left.name %>" src="<%= Routes.exports_path(@conn, :get_avatar, @id, @export.left.name) %>" />
-      <%= @export.left.name %>
-    </div>
-    <div class="column column-50 wa-avatar">
+      <figcaption><%= @export.left.name %></figcaption>
+    </figure>
+  </div>
+  <div class="wa-avatar">
+    <figure>
       <img alt="<%= @export.right.name %>" src="<%= Routes.exports_path(@conn, :get_avatar, @id, @export.right.name) %>" />
-      <%= @export.right.name %>
-    </div>
+      <figcaption><%= @export.right.name %></figcaption>
+    </figure>
   </div>
+</div>
 
-  <%= for message <- @export.messages do %>
-    <%= case message.side do %>
-      <% :left -> %>
-  <div class="wa-row wa-row-left">
-      <% :right -> %>
-  <div class="wa-row wa-row-right">
-      <% nil -> %>
-  <div class="wa-row">
-    <% end %>
-
-    <div class="wa-message">
-      <%= case message.attachment do %>
-        <% %Waev.Export.Message.File{filename: filename, type: :image} -> %>
-      <img class="wa-message-photo" alt="<%= filename %>" src="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>" />
-        <% _ -> %>
-      <% end %>
-      <div class="wa-message-box">
-        <%= case message.attachment do %>
-          <% %Waev.Export.Message.File{filename: filename, type: :file} -> %>
-        <a class="wa-message-text" href="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>"><%= filename %></a>
-          <% _ -> %>
-        <% end %>
-
-        <div><%= message.text %></div>
-        <div class="wa-message-date">
-          <%= message.date %>
-        </div>
-      </div>
-    </div>
-
-  </div>
+<%= for message <- @export.messages do %>
+  <%= case message.side do %>
+    <% :left -> %>
+<div class="wa-row wa-row-left">
+  <img class="wa-avatar--tiny" src="<%= Routes.exports_path(@conn, :get_avatar, @id, @export.left.name) %>" />
+    <% :right -> %>
+<div class="wa-row wa-row-right">
+  <img class="wa-avatar--tiny" src="<%= Routes.exports_path(@conn, :get_avatar, @id, @export.right.name) %>" />
   <% end %>
 
+  <div class="wa-message wa-white-box">
+    <%= case message.attachment do %>
+      <% %Waev.Export.Message.File{filename: filename, type: :image} -> %>
+    <img class="wa-message-photo" alt="<%= filename %>" src="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>" />
+      <% _ -> %>
+    <% end %>
+    <div class="wa-message-box">
+      <%= case message.attachment do %>
+        <% %Waev.Export.Message.File{filename: filename, type: :file} -> %>
+      <a class="wa-message-text" href="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>"><%= filename %></a>
+        <% _ -> %>
+      <% end %>
+
+      <div><%= message.text %></div>
+      <div class="wa-message-date">
+        <%= message.date %>
+      </div>
+    </div>
+  </div>
+
 </div>
+<% end %>

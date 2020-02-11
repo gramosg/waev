@@ -9,11 +9,11 @@
     <%= csrf_meta_tag() %>
   </head>
   <body>
-    <header>
-      <section class="container">
-        <h1>WhatsApp Exports Viewer</h1>
-      </section>
-    </header>
+    <!-- <header>
+         <section class="container">
+         <h1>WhatsApp Exports Viewer</h1>
+         </section>
+         </header> -->
     <main role="main" class="container">
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>

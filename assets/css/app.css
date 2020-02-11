@@ -9,33 +9,57 @@ body {
 .container {
   margin: 0 auto;
   max-width: 90.0rem;
-  padding: 0 2.0rem;
+  padding: 0 1.0rem;
   position: relative;
   width: 100%;
 }
 
-.wa-avatar {
+.wa-avatars {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.wa-avatars .wa-avatar {
+  flex: 0 0 50%;
   text-align: center;
+  padding: 16px 40px 12px 40px;
+}
+.wa-avatars .wa-avatar figure {
+  margin: 0;
+}
+
+.wa-avatar img {
+  max-height: 140px;
+  border-radius: 50%;
+}
+
+.wa-avatar--tiny {
+  max-height: 42px;
+  border-radius: 50%;
 }
 
 .wa-row {
+  margin-top: 10px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
 }
 .wa-row-left {
-  align-items: flex-start;
+  flex-direction: row;
 }
 .wa-row-right {
-  align-items: flex-end;
+  flex-direction: row-reverse;
+}
+
+.wa-white-box {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px grey;
 }
 
 /* Message box */
 .wa-message {
   padding: 0px !important;
-  margin-top: 10px;
-  background-color: white;
-  border-radius: 5px;
-  box-shadow: 1px 1px 2px grey;
+  margin: 0 10px 0 10px;
   max-width: 65%;
 }
 
@@ -47,6 +71,7 @@ body {
 .wa-message-box {
   padding: 0 10px 0 10px;
   margin-top: 5px;
+  overflow-wrap: break-word;
 }
 
 .wa-message-date {
