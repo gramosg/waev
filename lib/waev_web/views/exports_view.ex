@@ -35,13 +35,11 @@ defmodule WaevWeb.ExportsView do
     |> Enum.reduce(text, fn [url | _], t ->
       t
       |> String.replace(url, "<a target=\"_blank\" href=#{url}>#{url}</a>", global: false)
-      |> raw()
     end)
   end
 
   def nl_to_br(text) do
     String.replace(text, "\n", "<br />")
-    |> raw()
   end
 
   def pagination_bar(assigns, page, size) do
