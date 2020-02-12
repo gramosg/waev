@@ -39,15 +39,26 @@ body {
 }
 
 .row {
-  margin-top: 10px;
+  margin-top: 6px;
   display: flex;
   align-items: center;
+}
+.row--padded {
+  margin-top: 12px;
 }
 .row-left {
   flex-direction: row;
 }
 .row-right {
   flex-direction: row-reverse;
+}
+
+.date-box {
+  background-color: #666;
+  color: white;
+  padding: 4px 12px 4px 12px;
+  border-radius: 12px;
+  box-shadow: 1px 1px 2px grey;
 }
 
 .white-box {

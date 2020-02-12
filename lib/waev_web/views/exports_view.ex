@@ -1,6 +1,71 @@
 defmodule WaevWeb.ExportsView do
   use WaevWeb, :view
 
+  defp consolidate_block({side, messages}), do: {side, Enum.reverse(messages)}
+
+  defp consolidate_day({datestr, blocks}) do
+    # TODO use timex to pretty-print dates (translations??)
+    [d, m, y] = String.split(datestr, "/") |> Enum.map(&String.to_integer/1)
+    y = 2000 + y
+
+    m =
+      Enum.at(
+        [
+          "enero",
+          "febrero",
+          "marzo",
+          "abril",
+          "mayo",
+          "junio",
+          "julio",
+          "agosto",
+          "septiembre",
+          "octubre",
+          "noviembre",
+          "diciembre"
+        ],
+        m - 1
+      )
+
+    date = "#{d} de #{m} de #{y}"
+    {date, Enum.reverse(blocks)}
+  end
+
+  # Organize messages to make them easier to display
+  # [Waev.Export.Message] -> [{Date, [{Side, [Waev.Export.Message]}]}]
+  # Naming:                  ^-Days  ^-Blocks^-Block
+  def process_messages(messages) do
+    messages
+    |> Enum.reduce([], fn message, days ->
+      [datestr, timestr] = String.split(message.date, " ")
+      side = message.side
+
+      case days do
+        # Insert message on the last block (same date, same side)
+        [{^datestr, [{^side, block} | old_blocks]} | old_days] ->
+          [{datestr, [{side, [message | block]} | old_blocks]} | old_days]
+
+        # Insert message on new block (same date)
+        # Old block must be reversed to keep messages in the correct order
+        [{^datestr, [{old_side, old_block} | old_blocks]} | old_days] ->
+          [
+            {datestr, [{side, [message]}, consolidate_block({old_side, old_block}) | old_blocks]}
+            | old_days
+          ]
+
+        # Insert message on new date
+        # Old blocks must be reversed to keep days in the correct order
+        [{old_datestr, old_blocks} | old_days] ->
+          [{datestr, [{side, [message]}]}, consolidate_day({old_datestr, old_blocks}) | old_days]
+
+        # Ez.
+        [] ->
+          [{datestr, [{side, [message]}]}]
+      end
+    end)
+    |> Enum.reverse()
+  end
+
   def party_peek(assigns, party) do
     ~E"""
     <div class="party-peek">
