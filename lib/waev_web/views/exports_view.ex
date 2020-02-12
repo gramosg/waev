@@ -39,6 +39,11 @@ defmodule WaevWeb.ExportsView do
     end)
   end
 
+  def nl_to_br(text) do
+    String.replace(text, "\n", "<br />")
+    |> raw()
+  end
+
   def pagination_bar(assigns, page, size) do
     prev = if page == 0, do: 0, else: page - 1
     # TODO max
