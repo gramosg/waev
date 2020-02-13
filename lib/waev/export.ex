@@ -69,8 +69,6 @@ defmodule Waev.Export do
       true ->
         e =
           File.stream!(chat_path(e_id))
-          |> Enum.drop((page - 1) * size)
-          |> Enum.take(size)
           |> Enum.reduce(%Waev.Export{id: e_id}, fn line, e ->
             line = String.trim(line)
 
@@ -126,7 +124,15 @@ defmodule Waev.Export do
             end
           end)
 
-        {:ok, %{e | messages: Enum.reverse(e.messages)}}
+        {:ok,
+         %{
+           e
+           | messages:
+               e.messages
+               |> Enum.reverse()
+               |> Enum.drop((page - 1) * size)
+               |> Enum.take(size)
+         }}
 
       false ->
         :error
