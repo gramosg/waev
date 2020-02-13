@@ -1,9 +1,7 @@
 defmodule WaevWeb.ExportsView do
   use WaevWeb, :view
 
-  defp consolidate_block({side, messages}), do: {side, Enum.reverse(messages)}
-
-  defp consolidate_day({datestr, blocks}) do
+  defp pp_date(datestr) do
     # TODO use timex to pretty-print dates (translations??)
     [d, m, y] = String.split(datestr, "/") |> Enum.map(&String.to_integer/1)
     y = 2000 + y
@@ -27,8 +25,7 @@ defmodule WaevWeb.ExportsView do
         m - 1
       )
 
-    date = "#{d} de #{m} de #{y}"
-    {date, Enum.reverse(blocks)}
+    "#{d} de #{m} de #{y}"
   end
 
   # Organize messages to make them easier to display
@@ -37,7 +34,7 @@ defmodule WaevWeb.ExportsView do
   def process_messages(messages) do
     messages
     |> Enum.reduce([], fn message, days ->
-      [datestr, timestr] = String.split(message.date, " ")
+      [datestr, _timestr] = String.split(message.date, " ")
       side = message.side
 
       case days do
@@ -49,21 +46,31 @@ defmodule WaevWeb.ExportsView do
         # Old block must be reversed to keep messages in the correct order
         [{^datestr, [{old_side, old_block} | old_blocks]} | old_days] ->
           [
-            {datestr, [{side, [message]}, consolidate_block({old_side, old_block}) | old_blocks]}
+            {datestr, [{side, [message]}, {old_side, old_block} | old_blocks]}
             | old_days
           ]
 
         # Insert message on new date
         # Old blocks must be reversed to keep days in the correct order
         [{old_datestr, old_blocks} | old_days] ->
-          [{datestr, [{side, [message]}]}, consolidate_day({old_datestr, old_blocks}) | old_days]
+          [{datestr, [{side, [message]}]}, {old_datestr, old_blocks} | old_days]
 
         # Ez.
         [] ->
           [{datestr, [{side, [message]}]}]
       end
     end)
-    |> Enum.reverse()
+    # Reverse messages, blocks and days, as they were appended in the list head
+    # Enum.reduce is used to avoid double iteration with map + reverse
+    |> Enum.reduce([], fn {date, blocks}, days ->
+      blocks =
+        Enum.reduce(blocks, [], fn {side, messages}, blocks ->
+          [{side, Enum.reverse(messages)} | blocks]
+        end)
+
+      # Reverse days
+      [{pp_date(date), blocks} | days]
+    end)
   end
 
   def party_peek(assigns, party) do
