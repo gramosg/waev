@@ -3,47 +3,54 @@
   <%= party_peek(assigns, @export.right) %>
 </div>
 
-<%= for {date, blocks} <- process_messages(@export.messages) do %>
+<%= if Enum.empty?(@export.messages) do %>
   <div class="row row--padded">
-    <div class="date-box">
-      <%= date %>
+    <div class="middle-box">
+      No hay más mensajes :(
     </div>
   </div>
-  <%= for {side, block} <- blocks do %>
-    <div class="row--padded"></div>
-    <%= for message <- block do %>
-      <%= case side do %>
-        <% :left -> %>
-    <div class="row row-left">
-      <%= party_avatar(assigns, @export.left, :tiny) %>
-        <% :right -> %>
-    <div class="row row-right">
-      <%= party_avatar(assigns, @export.right, :tiny) %>
-      <% end %>
-
-      <div class="message white-box">
-        <%= case message.attachment do %>
-          <% %Waev.Export.Message.File{filename: filename, type: :image} -> %>
-        <img class="message-photo" alt="<%= filename %>" src="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>" />
-          <% _ -> %>
+<% else %>
+  <%= for {date, blocks} <- process_messages(@export.messages) do %>
+    <div class="row row--padded">
+      <div class="middle-box">
+        <%= date %>
+      </div>
+    </div>
+    <%= for {side, block} <- blocks do %>
+      <div class="row--padded"></div>
+      <%= for message <- block do %>
+        <%= case side do %>
+          <% :left -> %>
+      <div class="row row-left">
+        <%= party_avatar(assigns, @export.left, :tiny) %>
+          <% :right -> %>
+      <div class="row row-right">
+        <%= party_avatar(assigns, @export.right, :tiny) %>
         <% end %>
-        <div class="message-box">
+
+        <div class="message white-box">
           <%= case message.attachment do %>
-            <% %Waev.Export.Message.File{filename: filename, type: :file} -> %>
-          <a class="message-text" href="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>"><%= filename %></a>
+            <% %Waev.Export.Message.File{filename: filename, type: :image} -> %>
+          <img class="message-photo" alt="<%= filename %>" src="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>" />
             <% _ -> %>
           <% end %>
+          <div class="message-box">
+            <%= case message.attachment do %>
+              <% %Waev.Export.Message.File{filename: filename, type: :file} -> %>
+            <a class="message-text" href="<%= Routes.exports_path(@conn, :get_media, @id, filename) %>"><%= filename %></a>
+              <% _ -> %>
+            <% end %>
 
-          <div><%= message.text |> highlight_urls() |> nl_to_br() |> raw() %></div>
-          <div class="message-date">
-            <%= message.date %>
+            <div><%= message.text |> highlight_urls() |> nl_to_br() |> raw() %></div>
+            <div class="message-date">
+              <%= message.date %>
+            </div>
           </div>
         </div>
-      </div>
 
-    </div>
+      </div>
+      <% end %>
     <% end %>
   <% end %>
 <% end %>
-
 <%= pagination_bar(assigns, @page, @size) %>

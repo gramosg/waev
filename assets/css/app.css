@@ -64,7 +64,7 @@ body {
   flex-direction: row-reverse;
 }
 
-.date-box {
+.middle-box {
   background-color: var(--color-1);
   color: white;
   padding: 4px 12px 4px 12px;
