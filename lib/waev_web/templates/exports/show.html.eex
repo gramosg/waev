@@ -12,7 +12,7 @@
   <%= for {side, block} <- blocks do %>
     <div class="row--padded"></div>
     <%= for message <- block do %>
-      <%= case message.side do %>
+      <%= case side do %>
         <% :left -> %>
     <div class="row row-left">
       <%= party_avatar(assigns, @export.left, :tiny) %>
