@@ -22,6 +22,28 @@ body {
   padding: 0 2rem;
 }
 
+/* Fix milligram */
+.button-colored {
+  background-color: var(--color-1);
+  border-color: var(--color-1);
+
+  &.button-milligram-solid[disabled] {
+    background-color: var(--color-1);
+    border-color: var(--color-1);
+    opacity: 1;
+  }
+  &.button-clear, &.button-outline {
+    background-color: transparent;
+    color: var(--color-1);
+  }
+  &.button-clear {
+    &[disabled]:hover {
+      color: var(--color-1);
+    }
+    border-color: transparent;
+  }
+}
+
 .container {
   margin: 0 auto;
   max-width: 90.0rem;

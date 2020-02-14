@@ -124,7 +124,7 @@ defmodule WaevWeb.ExportsView do
 
     btn = fn enabled, highlight, page, text ->
       ~E"""
-      <a class="button button-large <%= if (not highlight) do %>button-clear<% end %>"
+      <a class="button button-large button-colored <%= if (not highlight) do %>button-clear<% else %>button-milligram-solid<% end %>"
          <%= if enabled do %>
            href="<%= path.(page) %>"
          <% else %>
