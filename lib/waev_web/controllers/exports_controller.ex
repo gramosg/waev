@@ -7,7 +7,7 @@ defmodule WaevWeb.ExportsController do
 
     case Waev.Export.get(id, page, size) do
       {:ok, export} ->
-        render(conn, "show.html", id: id, export: export, page: page, size: size)
+        render(conn, "show.html", id: id, export: export)
 
       :error ->
         conn

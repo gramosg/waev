@@ -50,12 +50,15 @@ body {
 }
 
 .row {
-  margin-top: 6px;
+  margin-top: 4px;
   display: flex;
-  align-items: center;
+  flex-direction: row; /* Milligram only does this in mid-big screens */
 }
 .row--padded {
-  margin-top: 12px;
+  margin-top: 10px;
+}
+.row-center {
+  justify-content: center
 }
 .row-left {
   flex-direction: row;

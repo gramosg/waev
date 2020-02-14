@@ -11,7 +11,7 @@
   </div>
 <% else %>
   <%= for {date, blocks} <- process_messages(@export.messages) do %>
-    <div class="row row--padded">
+    <div class="row row-center row--padded">
       <div class="middle-box">
         <%= date %>
       </div>
@@ -53,4 +53,4 @@
     <% end %>
   <% end %>
 <% end %>
-<%= pagination_bar(assigns, @page, @size) %>
+<%= pagination_bar(assigns, @export.pagination) %>

@@ -52,7 +52,7 @@ defmodule Waev.Export do
     end
   end
 
-  defstruct id: nil, left: nil, right: nil, messages: []
+  defstruct id: nil, left: nil, right: nil, messages: [], pagination: nil
 
   def list do
     case File.ls(path()) do
@@ -124,15 +124,17 @@ defmodule Waev.Export do
             end
           end)
 
-        {:ok,
-         %{
-           e
-           | messages:
-               e.messages
-               |> Enum.reverse()
-               |> Enum.drop((page - 1) * size)
-               |> Enum.take(size)
-         }}
+        pagination =
+          {:ok,
+           %{
+             e
+             | messages:
+                 e.messages
+                 |> Enum.reverse()
+                 |> Enum.drop((page - 1) * size)
+                 |> Enum.take(size),
+               pagination: %{page: page, size: size, pages: ceil(Enum.count(e.messages) / size)}
+           }}
 
       false ->
         :error

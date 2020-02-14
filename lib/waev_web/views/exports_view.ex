@@ -114,15 +114,50 @@ defmodule WaevWeb.ExportsView do
     String.replace(text, "\n", "<br />")
   end
 
-  def pagination_bar(assigns, page, size) do
-    prev = if page == 0, do: 0, else: page - 1
-    # TODO max
-    next = page + 1
+  def pagination_bar(assigns, %{page: page, size: size, pages: pages}) do
+    offset = 1 # How many buttons to see in each side
+    path = fn page ->
+      ~E"""
+      <%= Routes.exports_path(@conn, :show, @id, page: page, size: size) %>
+      """
+    end
+
+    btn = fn enabled, page, text ->
+      ~E"""
+      <a class="button button-clear"
+         <%= if enabled do %>
+           href="<%= path.(page) %>"
+         <% else %>
+           disabled
+         <% end %>>
+        <%= text %>
+      </a>
+      """
+    end
 
     ~E"""
-    <div>
-    <a href="<%= Routes.exports_path(@conn, :show, @id, page: prev, size: size) %>">Left</a>
-    <a href="<%= Routes.exports_path(@conn, :show, @id, page: next, size: size) %>">Right</a>
+    <div class="row row-center row--padded">
+      <%= btn.(page != 1, page-1, "<") %>
+      <%= if (page > 1 + offset) do %>
+        <%= btn.(true, 1, "1") %>
+      <% end %>
+      <%= if (page > 1 + offset + 1) do %>
+        ...
+      <% end %>
+      <%= for p <- max(1, page-offset) .. min(pages, page+offset) do %>
+        <%= if (p == page) do %>
+          <a disabled class="button"><%= page %></a>
+        <% else %>
+          <%= btn.(p != page, p, p) %>
+        <% end %>
+      <% end %>
+      <%= if (page < pages - offset - 1) do %>
+        ...
+      <% end %>
+      <%= if (page < pages - offset) do %>
+        <%= btn.(true, pages, pages) %>
+      <% end %>
+      <%= btn.(page != pages, page+1, ">") %>
     </div>
     """
   end
