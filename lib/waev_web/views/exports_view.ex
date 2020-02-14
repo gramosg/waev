@@ -122,9 +122,9 @@ defmodule WaevWeb.ExportsView do
       """
     end
 
-    btn = fn enabled, page, text ->
+    btn = fn enabled, highlight, page, text ->
       ~E"""
-      <a class="button button-clear"
+      <a class="button button-large <%= if (not highlight) do %>button-clear<% end %>"
          <%= if enabled do %>
            href="<%= path.(page) %>"
          <% else %>
@@ -137,27 +137,27 @@ defmodule WaevWeb.ExportsView do
 
     ~E"""
     <div class="row row-center row--padded">
-      <%= btn.(page != 1, page-1, "<") %>
+      <%= btn.(page != 1, false, page-1, raw("<i class=\"fas fa-caret-left\"></i>")) %>
       <%= if (page > 1 + offset) do %>
-        <%= btn.(true, 1, "1") %>
+        <%= btn.(true, false, 1, "1") %>
       <% end %>
       <%= if (page > 1 + offset + 1) do %>
         ...
       <% end %>
       <%= for p <- max(1, page-offset) .. min(pages, page+offset) do %>
         <%= if (p == page) do %>
-          <a disabled class="button"><%= page %></a>
+          <%= btn.(false, true, page, page) %>
         <% else %>
-          <%= btn.(p != page, p, p) %>
+          <%= btn.(p != page, false, p, p) %>
         <% end %>
       <% end %>
       <%= if (page < pages - offset - 1) do %>
         ...
       <% end %>
       <%= if (page < pages - offset) do %>
-        <%= btn.(true, pages, pages) %>
+        <%= btn.(true, false, pages, pages) %>
       <% end %>
-      <%= btn.(page != pages, page+1, ">") %>
+      <%= btn.(page != pages, false, page+1, raw("<i class=\"fas fa-caret-right\"></i>")) %>
     </div>
     """
   end

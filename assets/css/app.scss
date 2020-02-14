@@ -15,6 +15,13 @@ body {
   background-color: var(--color-3);
 }
 
+.button-large {
+  font-size: 1.4rem;
+  height: 4.5rem;
+  line-height: 4.5rem;
+  padding: 0 2rem;
+}
+
 .container {
   margin: 0 auto;
   max-width: 90.0rem;
