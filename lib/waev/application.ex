@@ -8,6 +8,7 @@ defmodule Waev.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      {Phoenix.PubSub, [name: Waev.PubSub, adapter: Phoenix.PubSub.PG2]},
       # Start the endpoint when the application starts
       WaevWeb.Endpoint
       # Starts a worker by calling: Waev.Worker.start_link(arg)

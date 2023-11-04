@@ -5,14 +5,14 @@
 # is restricted to this project.
 
 # General application configuration
-use Mix.Config
+import Config
 
 # Configures the endpoint
 config :waev, WaevWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "3Nj9X0/OrNnXhxVD+0HWwKCyGzEUsHrBSbnLNlX/y4SyVR934OWoIqs2+GYm993q",
   render_errors: [view: WaevWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Waev.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: Waev.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,

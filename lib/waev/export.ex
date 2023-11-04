@@ -124,17 +124,16 @@ defmodule Waev.Export do
             end
           end)
 
-        pagination =
-          {:ok,
-           %{
-             e
-             | messages:
-                 e.messages
-                 |> Enum.reverse()
-                 |> Enum.drop((page - 1) * size)
-                 |> Enum.take(size),
-               pagination: %{page: page, size: size, pages: ceil(Enum.count(e.messages) / size)}
-           }}
+        {:ok,
+         %{
+           e
+           | messages:
+               e.messages
+               |> Enum.reverse()
+               |> Enum.drop((page - 1) * size)
+               |> Enum.take(size),
+             pagination: %{page: page, size: size, pages: ceil(Enum.count(e.messages) / size)}
+         }}
 
       false ->
         :error
