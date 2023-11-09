@@ -1,8 +1,17 @@
 # Waev (WhatsApp Exports Viewer)
 
+WhatsApp lets you export conversations in a format consisting on a plaintext file and its related
+attachments. Waev parses that exports and renders them in a way very similar to the original
+conversation. This way you can backup important conversations indefinitely, and review them from any
+device.
+
+## Totally real sample
+
+![directed_by_quentin_inventino](ejemplo.png)
+
 ## Internal export format
 
-Each format is a folder inside `exports_path` with the following structure:
+Each export (conversation) is a folder inside `exports_path` with the following structure:
 
     export1/
       chat.txt
